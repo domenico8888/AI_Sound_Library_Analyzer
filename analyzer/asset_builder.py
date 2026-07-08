@@ -5,6 +5,10 @@ from .metadata_parser import (
     parse_audio_path
 )
 
+from .asset_metadata import extract_metadata
+
+from .audio_analyzer import analyze_audio
+
 
 
 PLUGIN_BY_FOLDER = {
@@ -59,6 +63,13 @@ def build_assets(sounds):
 
             "plugin": None,
 
+
+            "metadata": extract_metadata(path),
+
+
+            "audio_features": {},
+
+
             "files": {
 
                 "audio": None,
@@ -90,15 +101,15 @@ def build_assets(sounds):
             asset["plugin"] = detect_plugin(path)
 
 
-            metadata = parse_preset_name(
+            preset_metadata = parse_preset_name(
                 sound.metadata.filename
             )
 
 
-            asset["category"] = metadata["category"]
+            asset["category"] = preset_metadata["category"]
 
 
-            asset["name"] = metadata["name"]
+            asset["name"] = preset_metadata["name"]
 
 
 
@@ -113,12 +124,19 @@ def build_assets(sounds):
             asset["files"]["audio"] = str(path)
 
 
-            metadata = parse_audio_path(path)
+            audio_metadata = parse_audio_path(path)
 
 
-            asset["category"] = metadata["category"]
+            asset["category"] = audio_metadata["category"]
 
-            asset["subcategory"] = metadata["subcategory"]
+            asset["subcategory"] = audio_metadata["subcategory"]
+
+
+            # Analisi audio automatica
+
+            asset["audio_features"] = analyze_audio(
+                path
+            )
 
 
 

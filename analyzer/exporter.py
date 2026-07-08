@@ -2,7 +2,8 @@ import json
 
 
 
-def export_json(objects, output_file):
+def export_assets(assets, output_file):
+
 
     with open(
         output_file,
@@ -10,8 +11,9 @@ def export_json(objects, output_file):
         encoding="utf-8"
     ) as f:
 
+
         json.dump(
-            objects,
+            assets,
             f,
             indent=4,
             ensure_ascii=False
