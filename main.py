@@ -1,18 +1,21 @@
 import json
 
 from analyzer.pipeline import analyze_library
+from analyzer.dataset_builder import build_dataset
 
 
 
-with open(
-    "config.json"
-) as f:
+with open("config.json", encoding="utf-8") as f:
 
-    config=json.load(f)
+    config = json.load(f)
 
 
 
-if config["mode"] == "analyze":
+mode = config.get("mode")
+
+
+
+if mode == "analyze":
 
 
     analyze_library(
@@ -26,4 +29,31 @@ if config["mode"] == "analyze":
 
     print(
         "Analysis completed"
+    )
+
+
+
+elif mode == "dataset":
+
+
+    build_dataset(
+
+        config["dataset"]["analysis_output"],
+
+        config["dataset"]["dataset_output"]
+
+    )
+
+
+    print(
+        "Dataset generated"
+    )
+
+
+
+else:
+
+
+    raise ValueError(
+        f"Unknown mode: {mode}"
     )
