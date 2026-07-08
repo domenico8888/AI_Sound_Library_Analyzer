@@ -1,70 +1,29 @@
 import json
 
-from analyzer.config_loader import load_config
-from analyzer.pipeline import (
-    analyze_library,
-    create_dataset
-)
-
-
-
-config = load_config()
-
-
-
-mode = config.get(
-    "mode",
-    "analyze"
-)
-
-
-
-if mode == "analyze":
-
-
-    result = analyze_library(
-        config
-    )
-
-
-    output = config["output_file"]
-
-
-
-elif mode == "dataset":
-
-
-    result = create_dataset(
-        config
-    )
-
-
-    output = config["dataset"]["output"]
-
-
-
-else:
-
-    raise ValueError(
-        f"Modalità sconosciuta: {mode}"
-    )
+from analyzer.pipeline import analyze_library
 
 
 
 with open(
-    output,
-    "w",
-    encoding="utf-8"
-) as file:
+    "config.json"
+) as f:
+
+    config=json.load(f)
 
 
-    json.dump(
-        result,
-        file,
-        indent=4
+
+if config["mode"] == "analyze":
+
+
+    analyze_library(
+
+        config["dataset"]["input_folder"],
+
+        config["dataset"]["analysis_output"]
+
     )
 
 
-print(
-    f"Completato: {output}"
-)
+    print(
+        "Analysis completed"
+    )

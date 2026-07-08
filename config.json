@@ -1,11 +1,18 @@
 {
-    "mode": "analyze",
+    "mode": "dataset",
 
-    "library_path": "libraries/test_library",
+    "dataset": {
 
-    "output_file": "output/library_analysis.json",
+        "input_folder": "libraries",
+
+        "analysis_output": "output/library_analysis.json",
+
+        "dataset_output": "output/dataset.json"
+
+    },
 
     "extensions": {
+
         "audio": [
             ".wav",
             ".aiff",
@@ -22,10 +29,6 @@
             ".h2p",
             ".vital"
         ]
-    },
 
-    "dataset": {
-        "input_folder": "libraries",
-        "output": "output/dataset.json"
     }
 }

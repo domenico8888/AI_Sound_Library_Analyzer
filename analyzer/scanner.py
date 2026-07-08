@@ -1,68 +1,46 @@
 from pathlib import Path
-from .plugin_detector import detect_plugin
+import hashlib
+
+from .models import Sound, SoundMetadata
 
 
-def scan_library(folder, extensions):
+def generate_id(path):
 
-    folder = Path(folder)
-
-    results = []
-
-
-    audio_extensions = set(
-        extensions["audio"]
-    )
-
-    midi_extensions = set(
-        extensions["midi"]
-    )
-
-    preset_extensions = set(
-        extensions["preset"]
-    )
+    return hashlib.md5(
+        str(path).encode()
+    ).hexdigest()
 
 
 
-    for file in folder.rglob("*"):
+def scan_library(folder):
 
-        if not file.is_file():
-            continue
-
-
-        ext = file.suffix.lower()
+    sounds = []
 
 
+    for file in Path(folder).rglob("*"):
 
-        if ext in audio_extensions:
+        if file.is_file():
 
-            results.append({
-                "path": str(file),
-                "type": "audio"
-            })
+            sound = Sound(
 
+                id=generate_id(file),
 
-        elif ext in midi_extensions:
+                metadata=SoundMetadata(
 
-            results.append({
-                "path": str(file),
-                "type": "midi"
-            })
+                    filename=file.name,
 
+                    extension=file.suffix.lower(),
 
+                    path=str(file),
 
-        elif ext in preset_extensions:
+                    sound_type="unknown"
 
-            plugin_info = detect_plugin(file)
+                )
 
-            results.append({
-
-                "path": str(file),
-
-                "type": "preset",
-
-                **plugin_info
-
-            })
+            )
 
 
-    return results
+            sounds.append(sound)
+
+
+    return sounds
