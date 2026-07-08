@@ -4,10 +4,7 @@ from .classifier import classify
 from .exporter import export_json
 
 
-def analyze_library(
-        input_folder,
-        output_file
-):
+def analyze_library(input_folder,output_file):
 
 
     sounds = scan_library(

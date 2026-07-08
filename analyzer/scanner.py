@@ -1,16 +1,12 @@
 from pathlib import Path
 import hashlib
-
 from .models import Sound, SoundMetadata
-
 
 def generate_id(path):
 
     return hashlib.md5(
         str(path).encode()
     ).hexdigest()
-
-
 
 def scan_library(folder):
 
