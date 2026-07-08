@@ -1,0 +1,31 @@
+{
+    "mode": "analyze",
+
+    "library_path": "libraries/test_library",
+
+    "output_file": "output/library_analysis.json",
+
+    "extensions": {
+        "audio": [
+            ".wav",
+            ".aiff",
+            ".aif"
+        ],
+
+        "midi": [
+            ".mid",
+            ".midi"
+        ],
+
+        "preset": [
+            ".fxp",
+            ".h2p",
+            ".vital"
+        ]
+    },
+
+    "dataset": {
+        "input_folder": "libraries",
+        "output": "output/dataset.json"
+    }
+}

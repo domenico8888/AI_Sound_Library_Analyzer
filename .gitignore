@@ -1,0 +1,35 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual environment
+.venv/
+venv/
+env/
+
+# PyCharm
+.idea/
+*.iml
+
+# VS Code
+.vscode/
+
+# Environment variables
+.env
+
+# Output generati
+output/*.json
+
+# Dataset grandi
+output/dataset.json
+
+# Librerie audio personali
+libraries/
+
+# File temporanei
+*.log
+
+# Sistema operativo
+.DS_Store
+Thumbs.db

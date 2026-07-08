@@ -1,0 +1,35 @@
+nel file config.json il parametro "mode" può assumere due valori:
+
+
+1 - "analyze":
+
+    Esegue:
+
+    libraries/test_library
+
+    ↓
+
+    crea il file output/library_analysis.json
+
+
+
+
+2 - "dataset":
+
+    Esegue:
+
+    libraries/
+
+    Serum/
+        *.fxp
+
+    Diva/
+        *.fxp
+
+    Massive/
+        *.fxp
+
+
+    ↓
+
+    crea il file output/dataset.json
