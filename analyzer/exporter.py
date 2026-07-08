@@ -1,39 +1,18 @@
 import json
-from pathlib import Path
 
 
 
-def export_json(objects, filename):
-
-    data = [
-
-        obj.to_dict()
-
-        for obj in objects
-
-    ]
-
-
-    Path(filename).parent.mkdir(
-        exist_ok=True
-    )
-
+def export_json(objects, output_file):
 
     with open(
-        filename,
+        output_file,
         "w",
         encoding="utf-8"
     ) as f:
 
-
         json.dump(
-
-            data,
-
+            objects,
             f,
-
             indent=4,
-
             ensure_ascii=False
-
         )

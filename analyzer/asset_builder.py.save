@@ -1,0 +1,101 @@
+from pathlib import Path
+
+from .metadata_parser import parse_preset_name
+
+
+PLUGIN_BY_FOLDER = {
+
+    "Serum Presets": "Serum",
+
+    "Diva Presets": "Diva"
+
+}
+
+
+
+def detect_plugin(path):
+
+    for part in Path(path).parts:
+
+        if part in PLUGIN_BY_FOLDER:
+
+            return PLUGIN_BY_FOLDER[part]
+
+    return None
+
+
+
+def build_assets(sounds):
+
+    assets = []
+
+
+    for sound in sounds:
+
+        path = Path(
+            sound.metadata.path
+        )
+
+
+        asset = {
+
+            "id": sound.id,
+
+            "name": sound.metadata.filename,
+
+            "category": None,
+
+            "plugin": None,
+
+            "files": {
+
+                "audio": None,
+
+                "midi": None,
+
+                "preset": None
+
+            }
+
+        }
+
+
+        file_type = sound.metadata.sound_type
+
+
+        if file_type == "preset":
+
+            asset["files"]["preset"] = str(path)
+
+            asset["plugin"] = detect_plugin(path)
+
+
+            metadata = parse_preset_name(
+                sound.metadata.filename
+            )
+
+
+            asset["category"] = metadata["category"]
+
+            asset["name"] = metadata["name"]
+
+
+
+        elif file_type == "audio":
+
+            asset["files"]["audio"] = str(path)
+
+
+
+        elif file_type == "midi":
+
+            asset["files"]["midi"] = str(path)
+
+
+
+        assets.append(asset)
+
+
+    return assets
+
+

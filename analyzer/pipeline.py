@@ -1,40 +1,22 @@
 from .scanner import scan_library
-from .dataset_builder import build_dataset
-from .classifier import classify
+from .asset_builder import build_assets
 from .exporter import export_json
 
 
-def analyze_library(input_folder,output_file):
 
+def analyze_library(input_folder, output_file):
 
     sounds = scan_library(
         input_folder
     )
 
-
-    sounds = [
-
-        classify(sound)
-
-        for sound in sounds
-
-    ]
-
+    assets = build_assets(
+        sounds
+    )
 
     export_json(
-        sounds,
+        assets,
         output_file
     )
 
-
-    return sounds
-
-def create_dataset(config):
-
-    dataset = build_dataset(
-        config["dataset"]["input_folder"],
-        config["dataset"]["output"]
-    )
-
-
-    return dataset
+    return assets

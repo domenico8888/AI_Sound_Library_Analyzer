@@ -1,59 +1,17 @@
-import json
-
 from analyzer.pipeline import analyze_library
-from analyzer.dataset_builder import build_dataset
 
 
+if __name__ == "__main__":
 
-with open("config.json", encoding="utf-8") as f:
+    input_folder = "libraries/The Producer School - Motion"
 
-    config = json.load(f)
+    output_file = "output/assets_dataset.json"
 
-
-
-mode = config.get("mode")
-
-
-
-if mode == "analyze":
-
-
-    analyze_library(
-
-        config["dataset"]["input_folder"],
-
-        config["dataset"]["analysis_output"]
-
+    assets = analyze_library(
+        input_folder,
+        output_file
     )
-
 
     print(
-        "Analysis completed"
-    )
-
-
-
-elif mode == "dataset":
-
-
-    build_dataset(
-
-        config["dataset"]["analysis_output"],
-
-        config["dataset"]["dataset_output"]
-
-    )
-
-
-    print(
-        "Dataset generated"
-    )
-
-
-
-else:
-
-
-    raise ValueError(
-        f"Unknown mode: {mode}"
+        f"Analizzati {len(assets)} asset"
     )
