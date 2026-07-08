@@ -14,69 +14,153 @@ Modern music producers work with thousands of:
 * Audio samples (`.wav`, `.aiff`)
 * MIDI patterns (`.mid`)
 
-However, most sound libraries are manually organized and poorly searchable.
+Most sound libraries are manually organized and difficult to search or classify.
 
 This project aims to create an AI assistant capable of:
 
 * Automatically scanning sound libraries
 * Detecting synthesizers and plugins
 * Understanding sound characteristics
-* Classifying presets by category
+* Classifying sounds
 * Extracting synthesis parameters
 * Building structured datasets
 * Training AI models
 * Generating new original sound libraries
 
-The final goal is an AI sound designer.
+The final objective is an AI sound designer capable of understanding and creating sounds.
 
 ---
 
-# 🎯 Main Objectives
+# 🎯 Project Pipeline
 
-## Phase 1 — Library Scanner ✅
-
-The first stage of the project focuses on understanding existing sound libraries.
-
-Implemented:
-
-* Recursive folder scanning
-* Automatic file type detection
-* JSON-based configuration
-* Support for multiple audio formats
-
-Supported formats:
+The complete workflow is divided into multiple stages:
 
 ```
-Audio:
+Sound Libraries
+
+       |
+       v
+
+Library Scanner
+
+       |
+       v
+
+Preset / Audio Analyzer
+
+       |
+       v
+
+library_analysis.json
+
+       |
+       v
+
+Dataset Builder
+
+       |
+       v
+
+dataset.json
+
+       |
+       v
+
+Machine Learning Models
+
+       |
+       v
+
+AI Generated Sounds
+```
+
+---
+
+# 📚 Library Organization
+
+Before running the analyzer, sound libraries must be placed inside:
+
+```
+libraries/
+```
+
+Each library should have its own folder.
+
+Recommended structure:
+
+```
+libraries/
+
+├── Serum_Bass_Library/
+│
+│   ├── Presets/
+│   │   ├── Deep_Bass_01.fxp
+│   │   ├── Sub_Bass_02.fxp
+│   │
+│   ├── Samples/
+│   │   ├── Texture.wav
+│   │   ├── Noise.wav
+│   │
+│   └── MIDI/
+│       └── Bassline.mid
+│
+│
+├── Diva_Cinematic_Pads/
+│
+│   ├── Presets/
+│   │   ├── Dark_Pad_01.fxp
+│   │
+│   ├── Samples/
+│   │   └── Atmosphere.wav
+│   │
+│   └── MIDI/
+│       └── Sequence.mid
+```
+
+The analyzer works recursively.
+
+Folder names are not mandatory.
+
+Files are classified automatically by extension.
+
+---
+
+# 🎛️ Supported File Types
+
+## Audio
+
+Supported:
+
+```
 .wav
 .aiff
 .aif
+```
 
-MIDI:
+---
+
+## MIDI
+
+Supported:
+
+```
 .mid
 .midi
+```
 
-Presets:
+---
+
+## Presets
+
+Supported:
+
+```
 .fxp
 .h2p
 .vital
 ```
 
----
-
-# Phase 2 — Preset Analysis 🔄
-
-Current development stage.
-
-Goals:
-
-* Read VST preset metadata
-* Analyze binary structures
-* Extract embedded information
-* Detect plugin/vendor
-* Build a preset fingerprint
-
-Target plugins:
+Future support:
 
 * Serum
 * Diva
@@ -86,168 +170,12 @@ Target plugins:
 
 ---
 
-# Phase 3 — Dataset Generation 🧬
-
-After the analysis phase, the system transforms raw library information into structured datasets.
-
-The dataset represents the knowledge base that will later be used by machine learning models.
-
-The dataset may contain:
-
-* Preset metadata
-* Plugin information
-* Sound categories
-* Audio features
-* Synthesis parameters
-* Relationships between sounds
-
-Example pipeline:
-
-```
-Sound Library
-      |
-      |
-      v
-Analyzer
-      |
-      |
-      v
-library_analysis.json
-      |
-      |
-      v
-Dataset Builder
-      |
-      |
-      v
-dataset.json
-```
-
----
-
-# Phase 4 — AI Sound Classification 🤖
-
-The AI model will learn to understand and classify sounds.
-
-Possible categories:
-
-* Bass
-* Lead
-* Pad
-* Pluck
-* Arpeggio
-* Keys
-* Atmosphere
-* FX
-* Percussion
-
-Example:
-
-```
-Preset:
-Dark Future Bass
-
-Classification:
-
-Bass      92%
-Lead       5%
-Pad        3%
-```
-
----
-
-# Phase 5 — AI Sound Generation 🚀
-
-Future objective:
-
-Generate completely new sound libraries.
-
-Example request:
-
-```
-Create a melodic techno library inspired by:
-
-- Atmospheric textures
-- Dark analog basses
-- Cinematic pads
-- Deep electronic sounds
-```
-
-Possible output:
-
-```
-Generated Library/
-
-├── Presets/
-│   ├── Bass_001.fxp
-│   ├── Pad_001.fxp
-│
-├── Samples/
-│   ├── Texture.wav
-│
-└── MIDI/
-    ├── Sequence.mid
-```
-
----
-
-# 🏗️ Project Architecture
-
-Current structure:
-
-```
-AI_Sound_Library_Analyzer
-
-│
-├── analyzer/
-│
-│   ├── scanner.py
-│   │      File discovery engine
-│
-│   ├── config_loader.py
-│   │      JSON configuration loader
-│
-│   ├── fxp_reader.py
-│   │      VST preset binary reader
-│
-│   ├── plugin_detector.py
-│   │      Plugin identification engine
-│
-│   ├── dataset_builder.py
-│   │      Dataset generation
-│
-│   └── pipeline.py
-│          Processing workflow
-│
-├── libraries/
-│      Local audio libraries
-│      (excluded from Git)
-│
-├── output/
-│      Generated analysis files
-│
-├── config.json
-│      Main configuration file
-│
-├── main.py
-│      Application entry point
-│
-├── requirements.txt
-│
-└── README.md
-```
-
----
-
 # ⚙️ Installation
 
-## Requirements
-
-Recommended:
+Requirements:
 
 * Python 3.12+
 * Git
-* Virtual environment
 
 Clone repository:
 
@@ -255,7 +183,7 @@ Clone repository:
 git clone https://github.com/YOUR_USERNAME/AI_Sound_Library_Analyzer.git
 ```
 
-Enter project folder:
+Enter folder:
 
 ```bash
 cd AI_Sound_Library_Analyzer
@@ -267,7 +195,7 @@ Create virtual environment:
 python -m venv .venv
 ```
 
-Activate environment:
+Activate:
 
 Windows:
 
@@ -285,44 +213,71 @@ pip install -r requirements.txt
 
 # ⚙️ Configuration
 
-All application parameters are managed through:
+All parameters are managed through:
 
 ```
 config.json
 ```
 
-The most important parameter is:
+Example:
 
 ```json
-"mode"
+{
+    "mode": "analyze",
+
+    "dataset": {
+
+        "input_folder": "libraries",
+
+        "analysis_output": "output/library_analysis.json",
+
+        "dataset_output": "output/dataset.json"
+
+    },
+
+    "extensions": {
+
+        "audio": [
+            ".wav",
+            ".aiff",
+            ".aif"
+        ],
+
+        "midi": [
+            ".mid",
+            ".midi"
+        ],
+
+        "preset": [
+            ".fxp",
+            ".h2p",
+            ".vital"
+        ]
+
+    }
+}
 ```
-
-This defines which pipeline stage will be executed.
-
-Available modes:
-
-* `analyze`
-* `dataset`
 
 ---
 
 # 🔍 Analyze Mode
 
-Analyze mode is the first stage of the pipeline.
+Analyze mode is the first stage.
 
-Its purpose is to scan existing sound libraries and extract information.
+Purpose:
+
+To understand and catalog existing sound libraries.
 
 The analyzer:
 
-* scans folders recursively
-* detects file extensions
-* identifies audio files
-* identifies MIDI files
-* identifies presets
+* scans folders
+* detects files
+* classifies extensions
 * extracts metadata
-* prepares raw analysis data
+* analyzes presets
+* detects plugins when possible
 
-Example:
+Configuration:
 
 ```json
 {
@@ -348,7 +303,6 @@ Example:
 {
     "file": "Deep_Bass_01.fxp",
     "type": "preset",
-    "extension": ".fxp",
     "plugin": "Serum"
 }
 ```
@@ -357,18 +311,20 @@ Example:
 
 # 🧬 Dataset Mode
 
-Dataset mode is the second stage of the pipeline.
+Dataset mode is the second stage.
 
-It converts analysis results into a structured dataset ready for Artificial Intelligence processing.
+Purpose:
+
+Convert raw analysis information into structured data for Artificial Intelligence.
 
 The dataset builder:
 
 * reads analysis results
-* normalizes metadata
-* creates machine learning samples
-* prepares future training data
+* normalizes information
+* creates training samples
+* prepares ML-ready data
 
-Example:
+Configuration:
 
 ```json
 {
@@ -404,104 +360,93 @@ Example:
 
 ---
 
-# 🔄 Complete Workflow
+# 🧠 AI Development Roadmap
 
-The complete project pipeline:
+## Phase 1 — Scanner ✅
+
+Implemented:
+
+* Recursive scanning
+* File detection
+* Configuration system
+
+## Phase 2 — Preset Analysis 🔄
+
+Goals:
+
+* Parse VST formats
+* Extract metadata
+* Identify plugins
+* Extract synthesis parameters
+
+## Phase 3 — Dataset Creation
+
+Goals:
+
+* Build AI training datasets
+* Create sound representations
+* Link presets with audio characteristics
+
+## Phase 4 — Sound Classification
+
+AI classification:
+
+* Bass
+* Lead
+* Pad
+* Pluck
+* Keys
+* FX
+* Atmosphere
+
+## Phase 5 — Generative AI
+
+Future objective:
+
+Generate:
+
+* New presets
+* New samples
+* MIDI patterns
+* Complete sound libraries
+
+---
+
+# 🏗️ Project Structure
 
 ```
-                 Libraries
+AI_Sound_Library_Analyzer/
 
-                     |
-                     v
+├── analyzer/
 
-              +-------------+
-              |   ANALYZE   |
-              +-------------+
+│   ├── scanner.py
+│   ├── fxp_reader.py
+│   ├── plugin_detector.py
+│   ├── dataset_builder.py
+│   └── pipeline.py
 
-                     |
-                     v
+├── libraries/
+│   User audio libraries
+│   (excluded from Git)
 
-        library_analysis.json
+├── output/
+│   Generated analysis files
+│   (excluded from Git)
 
-                     |
-                     v
+├── config.json
 
-              +-------------+
-              |  DATASET    |
-              +-------------+
+├── main.py
 
-                     |
-                     v
+├── requirements.txt
 
-              dataset.json
-
-                     |
-                     v
-
-          Machine Learning Models
-
-                     |
-                     v
-
-             AI Sound Generation
-```
-
-Meaning:
-
-```
-Analyze = understand the library
-
-Dataset = prepare knowledge for AI
+└── README.md
 ```
 
 ---
 
-# 📊 Future Machine Learning Stack
+# 📌 Current Status
 
-Potential technologies:
-
-## Data Processing
-
-* NumPy
-* Librosa
-* SciPy
-
-## Machine Learning
-
-* PyTorch
-* TensorFlow
-* Scikit-learn
-
-## Audio Analysis
-
-Features:
-
-* MFCC
-* Spectral centroid
-* Spectral bandwidth
-* Harmonicity
-* ADSR characteristics
-* Rhythm analysis
-* Pitch detection
-
----
-
-# 🔬 Research Areas
-
-The project explores:
-
-* VST preset reverse engineering
-* Audio feature extraction
-* Representation learning
-* Generative AI for music
-* Neural sound synthesis
-* Automated sound design
-
----
-
-# 📌 Development Status
-
-Current version:
+Version:
 
 ```
 v0.1 - Foundation
@@ -509,52 +454,37 @@ v0.1 - Foundation
 
 Implemented:
 
-✅ Project architecture
+✅ Project structure
 ✅ Configuration system
 ✅ Library scanner
 ✅ File classification
-✅ FXP analysis foundation
-✅ Plugin detection framework
+✅ Analysis pipeline foundation
 ✅ Dataset pipeline foundation
 
-Next milestones:
+Next:
 
 ⬜ Advanced FXP parser
 ⬜ Serum parameter extraction
 ⬜ Diva parameter extraction
 ⬜ Audio feature extraction
-⬜ ML dataset preparation
-⬜ AI classifier training
-⬜ Generative sound model
+⬜ Machine learning models
+⬜ Generative sound engine
 
 ---
 
-# 🤝 Contributing
+# 🎛️ Project Philosophy
 
-Contributions, ideas and research discussions are welcome.
+The goal is not only to store sounds.
 
-Areas where help is valuable:
+The goal is to teach an AI system how sound designers think:
 
-* VST format reverse engineering
-* Audio machine learning
-* Neural synthesis
-* Dataset creation
+* Why a sound has a specific character
+* Which synthesis parameters create it
+* How different sounds relate to each other
+* How to generate new original sounds
 
 ---
 
 # 📜 License
 
-License information will be added when the project reaches a stable release.
-
----
-
-# 🎛️ Project Motivation
-
-The long-term vision is to create an AI system capable of understanding sound like a professional sound designer.
-
-Not only recognizing files, but understanding:
-
-* Why a sound works
-* How it was synthesized
-* Which parameters create its character
-* How to generate new original sounds
+License information will be added in a future stable release.
