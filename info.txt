@@ -33,3 +33,28 @@ nel file config.json il parametro "mode" può assumere due valori:
     ↓
 
     crea il file output/dataset.json
+
+
+
+
+Da ora in poi il workflow sarà:
+
+Quando lavori:
+
+git add .
+git commit -m "descrizione modifica"
+git push
+
+Quando sei su un altro PC:
+
+git clone https://github.com/TUO_USERNAME/AI_Sound_Library_Analyzer.git
+
+cd AI_Sound_Library_Analyzer
+
+python -m venv .venv
+
+.venv\Scripts\activate
+
+pip install -r requirements.txt
+
+e sei operativo.
