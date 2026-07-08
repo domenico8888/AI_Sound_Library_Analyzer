@@ -24,9 +24,6 @@ output/*.json
 # Dataset grandi
 output/dataset.json
 
-# Librerie audio personali
-libraries/
-
 # File temporanei
 *.log
 
