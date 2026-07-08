@@ -19,7 +19,7 @@ However, most sound libraries are manually organized and poorly searchable.
 This project aims to create an AI assistant capable of:
 
 * Automatically scanning sound libraries
-* Detecting the synthesizer/plugin used
+* Detecting synthesizers and plugins
 * Understanding sound characteristics
 * Classifying presets by category
 * Extracting synthesis parameters
@@ -35,16 +35,14 @@ The final goal is an AI sound designer.
 
 ## Phase 1 — Library Scanner ✅
 
+The first stage of the project focuses on understanding existing sound libraries.
+
 Implemented:
 
 * Recursive folder scanning
 * Automatic file type detection
 * JSON-based configuration
-* Support for:
-
-  * Audio files
-  * MIDI files
-  * Synth presets
+* Support for multiple audio formats
 
 Supported formats:
 
@@ -73,12 +71,12 @@ Current development stage.
 Goals:
 
 * Read VST preset metadata
-* Analyze binary structure
+* Analyze binary structures
 * Extract embedded information
 * Detect plugin/vendor
 * Build a preset fingerprint
 
-Supported targets:
+Target plugins:
 
 * Serum
 * Diva
@@ -90,41 +88,46 @@ Supported targets:
 
 # Phase 3 — Dataset Generation 🧬
 
-The system will automatically create datasets from existing libraries.
+After the analysis phase, the system transforms raw library information into structured datasets.
 
-Example:
+The dataset represents the knowledge base that will later be used by machine learning models.
 
-Input:
+The dataset may contain:
+
+* Preset metadata
+* Plugin information
+* Sound categories
+* Audio features
+* Synthesis parameters
+* Relationships between sounds
+
+Example pipeline:
 
 ```
-libraries/
-
-├── Serum/
-│   ├── Bass01.fxp
-│   ├── Lead01.fxp
-│
-├── Diva/
-│   ├── Pad01.fxp
+Sound Library
+      |
+      |
+      v
+Analyzer
+      |
+      |
+      v
+library_analysis.json
+      |
+      |
+      v
+Dataset Builder
+      |
+      |
+      v
+dataset.json
 ```
-
-Output:
-
-```json
-{
-    "file": "Bass01.fxp",
-    "plugin": "Serum",
-    "category": "Bass",
-    "features": {}
-}
-```
-
-This dataset will become the foundation for machine learning models.
 
 ---
 
 # Phase 4 — AI Sound Classification 🤖
 
-The AI model will learn to classify sounds.
+The AI model will learn to understand and classify sounds.
 
 Possible categories:
 
@@ -138,7 +141,7 @@ Possible categories:
 * FX
 * Percussion
 
-Example output:
+Example:
 
 ```
 Preset:
@@ -157,22 +160,20 @@ Pad        3%
 
 Future objective:
 
-Generate completely new libraries:
+Generate completely new sound libraries.
 
-Example:
-
-Input:
+Example request:
 
 ```
 Create a melodic techno library inspired by:
 
-- Afterlife style
-- Deep atmospheric textures
+- Atmospheric textures
 - Dark analog basses
 - Cinematic pads
+- Deep electronic sounds
 ```
 
-Output:
+Possible output:
 
 ```
 Generated Library/
@@ -199,22 +200,22 @@ AI_Sound_Library_Analyzer
 
 │
 ├── analyzer/
-│   │
+│
 │   ├── scanner.py
 │   │      File discovery engine
-│   │
+│
 │   ├── config_loader.py
 │   │      JSON configuration loader
-│   │
+│
 │   ├── fxp_reader.py
 │   │      VST preset binary reader
-│   │
+│
 │   ├── plugin_detector.py
 │   │      Plugin identification engine
-│   │
+│
 │   ├── dataset_builder.py
 │   │      Dataset generation
-│   │
+│
 │   └── pipeline.py
 │          Processing workflow
 │
@@ -245,8 +246,8 @@ AI_Sound_Library_Analyzer
 Recommended:
 
 * Python 3.12+
-* PyCharm
 * Git
+* Virtual environment
 
 Clone repository:
 
@@ -284,46 +285,50 @@ pip install -r requirements.txt
 
 # ⚙️ Configuration
 
-All parameters are managed through:
+All application parameters are managed through:
 
 ```
 config.json
 ```
 
+The most important parameter is:
+
+```json
+"mode"
+```
+
+This defines which pipeline stage will be executed.
+
+Available modes:
+
+* `analyze`
+* `dataset`
+
+---
+
+# 🔍 Analyze Mode
+
+Analyze mode is the first stage of the pipeline.
+
+Its purpose is to scan existing sound libraries and extract information.
+
+The analyzer:
+
+* scans folders recursively
+* detects file extensions
+* identifies audio files
+* identifies MIDI files
+* identifies presets
+* extracts metadata
+* prepares raw analysis data
+
 Example:
 
 ```json
 {
-    "mode": "analyze",
-
-    "library_path": "libraries/test_library",
-
-    "output_file": "output/library_analysis.json",
-
-    "extensions": {
-        "audio": [
-            ".wav",
-            ".aiff",
-            ".aif"
-        ],
-
-        "midi": [
-            ".mid",
-            ".midi"
-        ],
-
-        "preset": [
-            ".fxp",
-            ".h2p",
-            ".vital"
-        ]
-    }
+    "mode": "analyze"
 }
 ```
-
----
-
-# ▶️ Usage
 
 Run:
 
@@ -331,10 +336,122 @@ Run:
 python main.py
 ```
 
-The application will analyze the configured library and generate:
+Output:
 
 ```
 output/library_analysis.json
+```
+
+Example:
+
+```json
+{
+    "file": "Deep_Bass_01.fxp",
+    "type": "preset",
+    "extension": ".fxp",
+    "plugin": "Serum"
+}
+```
+
+---
+
+# 🧬 Dataset Mode
+
+Dataset mode is the second stage of the pipeline.
+
+It converts analysis results into a structured dataset ready for Artificial Intelligence processing.
+
+The dataset builder:
+
+* reads analysis results
+* normalizes metadata
+* creates machine learning samples
+* prepares future training data
+
+Example:
+
+```json
+{
+    "mode": "dataset"
+}
+```
+
+Run:
+
+```bash
+python main.py
+```
+
+Output:
+
+```
+output/dataset.json
+```
+
+Example:
+
+```json
+{
+    "preset": "Deep_Bass_01.fxp",
+    "plugin": "Serum",
+    "category": "Bass",
+    "features": {
+        "brightness": 0.72,
+        "complexity": 0.61
+    }
+}
+```
+
+---
+
+# 🔄 Complete Workflow
+
+The complete project pipeline:
+
+```
+                 Libraries
+
+                     |
+                     v
+
+              +-------------+
+              |   ANALYZE   |
+              +-------------+
+
+                     |
+                     v
+
+        library_analysis.json
+
+                     |
+                     v
+
+              +-------------+
+              |  DATASET    |
+              +-------------+
+
+                     |
+                     v
+
+              dataset.json
+
+                     |
+                     v
+
+          Machine Learning Models
+
+                     |
+                     v
+
+             AI Sound Generation
+```
+
+Meaning:
+
+```
+Analyze = understand the library
+
+Dataset = prepare knowledge for AI
 ```
 
 ---
@@ -343,7 +460,7 @@ output/library_analysis.json
 
 Potential technologies:
 
-## Data processing
+## Data Processing
 
 * NumPy
 * Librosa
@@ -433,7 +550,7 @@ License information will be added when the project reaches a stable release.
 
 # 🎛️ Project Motivation
 
-The long-term vision is to create an AI system capable of understanding sound the same way a professional sound designer does:
+The long-term vision is to create an AI system capable of understanding sound like a professional sound designer.
 
 Not only recognizing files, but understanding:
 
