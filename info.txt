@@ -45,7 +45,7 @@ git add .
 git commit -m "descrizione modifica"
 git push
 
-Quando sei su un altro PC:
+Quando sei su un altro PC dove non c'è nulla
 
 git clone https://github.com/TUO_USERNAME/AI_Sound_Library_Analyzer.git
 
@@ -58,3 +58,8 @@ python -m venv .venv
 pip install -r requirements.txt
 
 e sei operativo.
+
+Quando sei su un altro PC dove c'è il repo non aggiornato all'ultima versione:
+
+git pull
+
