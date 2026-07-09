@@ -3,123 +3,15 @@ import numpy as np
 import warnings
 
 
-def hz_to_note(freq):
-
-    if freq <= 0:
-        return None
-
-    midi = (
-        69 +
-        12 *
-        np.log2(freq / 440)
-    )
-
-    note_names = [
-        "C",
-        "C#",
-        "D",
-        "D#",
-        "E",
-        "F",
-        "F#",
-        "G",
-        "G#",
-        "A",
-        "A#",
-        "B"
-    ]
-
-    note = note_names[
-        int(round(midi)) % 12
-    ]
-
-    octave = (
-        int(round(midi)) // 12
-    ) - 1
-
-
-    return {
-        "hz": round(float(freq),2),
-        "midi": round(float(midi),2),
-        "note": f"{note}{octave}"
-    }
-
-
-
-def detect_pitch(y, sr):
-
-    try:
-
-        # per bass e synth
-        # limitiamo la ricerca
-        pitches, magnitudes = librosa.piptrack(
-            y=y,
-            sr=sr,
-            fmin=35,
-            fmax=500
-        )
-
-
-        candidates = []
-
-
-        for t in range(
-            pitches.shape[1]
-        ):
-
-            idx = magnitudes[:,t].argmax()
-
-            pitch = pitches[idx,t]
-
-            magnitude = magnitudes[idx,t]
-
-
-            if (
-                pitch > 35
-                and magnitude > 0.05
-            ):
-
-                candidates.append(
-                    pitch
-                )
-
-
-
-        if len(candidates) < 3:
-            return None
-
-
-
-        # mediana più stabile
-        freq = np.median(
-            candidates
-        )
-
-
-        return hz_to_note(
-            freq
-        )
-
-
-    except Exception:
-
-        return None
-
-
-
-
 def analyze_audio(audio_path):
 
     features = {}
 
-
     try:
 
-
-        # ======================
-        # LOAD
-        # ======================
-
+        # ============================
+        # LOAD AUDIO
+        # ============================
 
         y, sr = librosa.load(
             audio_path,
@@ -143,38 +35,30 @@ def analyze_audio(audio_path):
 
 
 
-        # ======================
-        # PARAMETRI FFT
-        # ======================
-
+        # ============================
+        # FFT DINAMICO
+        # ============================
 
         signal_length = len(y)
 
 
-        if signal_length < 1024:
+        if signal_length < 512:
+            n_fft = 256
 
+        elif signal_length < 1024:
             n_fft = 512
 
         else:
-
             n_fft = 2048
 
 
 
-        hop_length = 512
-
-
-
-
-        # ======================
-        # RMS
-        # ======================
-
+        # ============================
+        # RMS ENERGY
+        # ============================
 
         rms = librosa.feature.rms(
-            y=y,
-            frame_length=n_fft,
-            hop_length=hop_length
+            y=y
         )
 
 
@@ -190,77 +74,135 @@ def analyze_audio(audio_path):
 
 
 
-
-        # ======================
-        # SPECTRAL FEATURES
-        # ======================
-
+        # ============================
+        # SPECTRAL CENTROID
+        # ============================
 
         centroid = librosa.feature.spectral_centroid(
             y=y,
             sr=sr,
-            n_fft=n_fft,
-            hop_length=hop_length
+            n_fft=n_fft
         )
 
 
-        rolloff = librosa.feature.spectral_rolloff(
-            y=y,
-            sr=sr,
-            n_fft=n_fft,
-            hop_length=hop_length
-        )
-
-
-        bandwidth = librosa.feature.spectral_bandwidth(
-            y=y,
-            sr=sr,
-            n_fft=n_fft,
-            hop_length=hop_length
-        )
-
-
-        flatness = librosa.feature.spectral_flatness(
-            y=y,
-            n_fft=n_fft,
-            hop_length=hop_length
+        centroid_value = float(
+            np.mean(centroid)
         )
 
 
         features["spectral_centroid"] = round(
-            float(np.mean(centroid)),
+            centroid_value,
             2
+        )
+
+
+
+        # ============================
+        # SPECTRAL ROLLOFF
+        # ============================
+
+        rolloff = librosa.feature.spectral_rolloff(
+            y=y,
+            sr=sr,
+            n_fft=n_fft
+        )
+
+
+        rolloff_value = float(
+            np.mean(rolloff)
         )
 
 
         features["spectral_rolloff"] = round(
-            float(np.mean(rolloff)),
+            rolloff_value,
             2
+        )
+
+
+
+        # ============================
+        # SPECTRAL BANDWIDTH
+        # ============================
+
+        bandwidth = librosa.feature.spectral_bandwidth(
+            y=y,
+            sr=sr,
+            n_fft=n_fft
+        )
+
+
+        bandwidth_value = float(
+            np.mean(bandwidth)
         )
 
 
         features["spectral_bandwidth"] = round(
-            float(np.mean(bandwidth)),
+            bandwidth_value,
             2
         )
 
 
-        features["spectral_flatness"] = round(
-            float(np.mean(flatness)),
-            6
+
+        # ============================
+        # SPECTRAL CONTRAST
+        # ============================
+
+        contrast = librosa.feature.spectral_contrast(
+            y=y,
+            sr=sr,
+            n_fft=n_fft
         )
 
 
+        contrast_values = [
+            float(x)
+            for x in np.mean(
+                contrast,
+                axis=1
+            )
+        ]
 
 
-        # ======================
-        # ZERO CROSSING
-        # ======================
+        features["spectral_contrast"] = [
+            round(x,3)
+            for x in contrast_values
+        ]
 
+
+
+        # ============================
+        # CHROMA
+        # ============================
+
+        chroma = librosa.feature.chroma_stft(
+            y=y,
+            sr=sr,
+            n_fft=n_fft
+        )
+
+
+        chroma_values = [
+            float(x)
+            for x in np.mean(
+                chroma,
+                axis=1
+            )
+        ]
+
+
+        features["chroma"] = [
+            round(x,3)
+            for x in chroma_values
+        ]
+
+
+
+        # ============================
+        # ZERO CROSSING RATE
+        # ============================
 
         zcr = librosa.feature.zero_crossing_rate(
-            y,
-            hop_length=hop_length
+            y
         )
 
 
@@ -276,30 +218,24 @@ def analyze_audio(audio_path):
 
 
 
-
-        # ======================
+        # ============================
         # MFCC
-        # ======================
-
+        # ============================
 
         mfcc = librosa.feature.mfcc(
             y=y,
             sr=sr,
             n_mfcc=13,
-            n_fft=n_fft,
-            hop_length=hop_length
+            n_fft=n_fft
         )
 
 
         mfcc_values = [
-
             round(float(x),3)
-
             for x in np.mean(
                 mfcc,
                 axis=1
             )
-
         ]
 
 
@@ -307,103 +243,115 @@ def analyze_audio(audio_path):
 
 
 
-
-        # ======================
-        # CONTRAST
-        # ======================
-
-
-        try:
-
-            contrast = librosa.feature.spectral_contrast(
-                y=y,
-                sr=sr,
-                n_fft=n_fft,
-                hop_length=hop_length
-            )
-
-
-            features["spectral_contrast"] = [
-
-                round(float(x),3)
-
-                for x in np.mean(
-                    contrast,
-                    axis=1
-                )
-
-            ]
-
-
-        except:
-
-            features["spectral_contrast"] = []
-
-
-
-
-
-        # ======================
-        # CHROMA
-        # ======================
-
-
-        try:
-
-            chroma = librosa.feature.chroma_stft(
-                y=y,
-                sr=sr,
-                n_fft=n_fft,
-                hop_length=hop_length
-            )
-
-
-            features["chroma"] = [
-
-                round(float(x),3)
-
-                for x in np.mean(
-                    chroma,
-                    axis=1
-                )
-
-            ]
-
-        except:
-
-            features["chroma"] = []
-
-
-
-
-
-
-        # ======================
+        # ============================
         # PITCH
-        # ======================
+        # ============================
+
+        pitch_data = None
 
 
-        pitch_data = detect_pitch(
-            y,
-            sr
-        )
+        try:
+
+            pitches, magnitudes = librosa.piptrack(
+                y=y,
+                sr=sr,
+                fmin=30,
+                fmax=1000
+            )
+
+
+            pitch_values = []
+
+
+            for t in range(
+                pitches.shape[1]
+            ):
+
+                index = magnitudes[:,t].argmax()
+
+                pitch = pitches[index,t]
+
+
+                if pitch > 0:
+
+                    pitch_values.append(
+                        pitch
+                    )
+
+
+
+            if len(pitch_values) > 5:
+
+
+                freq = np.percentile(
+                    pitch_values,
+                    20
+                )
+
+
+                midi = (
+                    69 +
+                    12 *
+                    np.log2(
+                        freq / 440
+                    )
+                )
+
+
+                note_names = [
+                    "C","C#","D",
+                    "D#","E","F",
+                    "F#","G","G#",
+                    "A","A#","B"
+                ]
+
+
+                note = note_names[
+                    int(round(midi)) % 12
+                ]
+
+
+                octave = (
+                    int(round(midi)) // 12
+                ) - 1
+
+
+
+                pitch_data = {
+
+                    "hz": round(
+                        float(freq),
+                        2
+                    ),
+
+                    "midi": round(
+                        float(midi),
+                        2
+                    ),
+
+                    "note": f"{note}{octave}"
+
+                }
+
+
+        except Exception:
+
+            pitch_data = None
+
 
 
         features["pitch"] = pitch_data
 
 
 
-
-        # ======================
+        # ============================
         # TEMPO
-        # ======================
-
+        # ============================
 
         tempo = None
 
 
         if duration >= 3:
-
 
             try:
 
@@ -413,10 +361,11 @@ def analyze_audio(audio_path):
                         "ignore"
                     )
 
-
-                    tempo_value = librosa.feature.rhythm.tempo(
-                        y=y,
-                        sr=sr
+                    tempo_value = (
+                        librosa.feature.rhythm.tempo(
+                            y=y,
+                            sr=sr
+                        )
                     )
 
 
@@ -427,51 +376,46 @@ def analyze_audio(audio_path):
                         )
 
 
-            except:
+            except Exception:
 
-                pass
+                tempo = None
 
 
 
         features["tempo"] = (
-
             round(tempo,2)
-
             if tempo
-
             else None
-
         )
 
 
 
-
-
-
-        # ======================
+        # ============================
         # AI EMBEDDING
-        # ======================
-
+        # ============================
 
         embedding = []
 
 
+        # MFCC
         embedding.extend(
-            mfcc_values
+            [
+                float(x)
+                for x in mfcc_values
+            ]
         )
 
 
+        # Spectral features
         embedding.extend([
 
             rms_value,
 
-            np.mean(centroid),
+            centroid_value,
 
-            np.mean(rolloff),
+            rolloff_value,
 
-            np.mean(bandwidth),
-
-            np.mean(flatness),
+            bandwidth_value,
 
             zcr_value,
 
@@ -480,6 +424,21 @@ def analyze_audio(audio_path):
         ])
 
 
+        # Contrast
+
+        embedding.extend(
+            contrast_values
+        )
+
+
+        # Chroma
+
+        embedding.extend(
+            chroma_values
+        )
+
+
+        # Pitch
 
         if pitch_data:
 
@@ -505,10 +464,6 @@ def analyze_audio(audio_path):
 
 
 
-        return features
-
-
-
     except Exception as e:
 
 
@@ -519,12 +474,20 @@ def analyze_audio(audio_path):
 
         return {
 
-            "duration":None,
-            "sample_rate":None,
-            "rms_energy":None,
-            "mfcc":[],
-            "pitch":None,
-            "tempo":None,
-            "embedding":[]
+            "duration": None,
+            "sample_rate": None,
+            "tempo": None,
+            "rms_energy": None,
+            "spectral_centroid": None,
+            "spectral_rolloff": None,
+            "spectral_bandwidth": None,
+            "zero_crossing_rate": None,
+            "mfcc": [],
+            "pitch": None,
+            "embedding": []
 
         }
+
+
+
+    return features
