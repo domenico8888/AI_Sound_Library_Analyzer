@@ -9,6 +9,10 @@ from .asset_metadata import extract_metadata
 
 from .audio_analyzer import analyze_audio
 
+from .midi_analyzer import analyze_midi
+
+from .music_metadata import normalize_key
+
 
 
 PLUGIN_BY_FOLDER = {
@@ -44,30 +48,43 @@ def build_assets(sounds):
 
     for sound in sounds:
 
+
         path = Path(
             sound.metadata.path
         )
 
 
+        metadata = extract_metadata(path)
+
+
         asset = {
+
 
             "id": sound.id,
 
+
             "name": sound.metadata.filename,
+
 
             "asset_type": sound.metadata.sound_type,
 
+
             "category": None,
 
+
             "subcategory": None,
+
 
             "plugin": None,
 
 
-            "metadata": extract_metadata(path),
+            "metadata": metadata,
 
 
             "audio_features": {},
+
+
+            "midi_features": {},
 
 
             "files": {
@@ -84,7 +101,20 @@ def build_assets(sounds):
 
 
 
+        # -----------------------
+        # KEY NORMALIZATION
+        # -----------------------
+
+        asset["metadata"]["key_normalized"] = normalize_key(
+
+            asset["metadata"].get("key")
+
+        )
+
+
+
         file_type = sound.metadata.sound_type
+
 
 
 
@@ -101,6 +131,7 @@ def build_assets(sounds):
             asset["plugin"] = detect_plugin(path)
 
 
+
             preset_metadata = parse_preset_name(
                 sound.metadata.filename
             )
@@ -110,6 +141,7 @@ def build_assets(sounds):
 
 
             asset["name"] = preset_metadata["name"]
+
 
 
 
@@ -124,19 +156,22 @@ def build_assets(sounds):
             asset["files"]["audio"] = str(path)
 
 
+
             audio_metadata = parse_audio_path(path)
 
 
             asset["category"] = audio_metadata["category"]
 
+
             asset["subcategory"] = audio_metadata["subcategory"]
 
 
-            # Analisi audio automatica
 
             asset["audio_features"] = analyze_audio(
                 path
             )
+
+
 
 
 
@@ -149,6 +184,44 @@ def build_assets(sounds):
 
 
             asset["files"]["midi"] = str(path)
+
+
+
+            midi_features = analyze_midi(
+                path
+            )
+
+
+
+            midi_features["tempo"] = {
+
+
+                "midi_bpm": midi_features.get(
+                    "bpm_detected"
+                ),
+
+
+                "metadata_bpm": asset["metadata"].get(
+                    "bpm"
+                ),
+
+
+                "effective_bpm": (
+
+                    asset["metadata"].get("bpm")
+
+                    or
+
+                    midi_features.get("bpm_detected")
+
+                )
+
+            }
+
+
+
+            asset["midi_features"] = midi_features
+
 
 
 
